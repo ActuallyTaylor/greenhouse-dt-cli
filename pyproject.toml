@@ -1,0 +1,18 @@
+[project]
+name = "greenhouse-dt-cli"
+version = "0.1.0"
+description = "A cli interface for the GreenhouseDT"
+readme = "README.md"
+authors = [
+    { name = "Taylor Lineman", email = "git@actuallytaylor.com" },
+    { name = "Reid Taylor", email = "reidtaylor1126@gmail.com" },
+]
+requires-python = ">=3.15"
+dependencies = []
+
+[project.scripts]
+greenhouse-dt-cli = "greenhouse_dt_cli:main"
+
+[build-system]
+requires = ["uv_build>=0.13.3,<0.14.0"]
+build-backend = "uv_build"
