@@ -8,7 +8,9 @@ authors = [
     { name = "Reid Taylor", email = "reidtaylor1126@gmail.com" },
 ]
 requires-python = ">=3.15"
-dependencies = []
+dependencies = [
+    "asciimatics>=1.15.0",
+]
 
 [project.scripts]
 greenhouse-dt-cli = "greenhouse_dt_cli:main"
