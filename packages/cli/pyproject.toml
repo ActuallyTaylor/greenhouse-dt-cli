@@ -1,0 +1,23 @@
+[project]
+name = "cli"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Taylor Lineman", email = "git@actuallytaylor.com" },
+    { name = "Reid Taylor", email = "reidtaylor1126@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "asciimatics>=1.15.0",
+]
+
+[project.scripts]
+cli = "cli:main"
+
+[build-system]
+requires = ["uv_build>=0.13.6,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+cli = { workspace = true }
