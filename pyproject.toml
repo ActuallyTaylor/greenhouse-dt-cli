@@ -7,8 +7,10 @@ authors = [
     { name = "Taylor Lineman", email = "git@actuallytaylor.com" },
     { name = "Reid Taylor", email = "reidtaylor1126@gmail.com" },
 ]
-requires-python = ">=3.15"
-dependencies = []
+requires-python = ">=3.14"
+dependencies = [
+    "asciimatics>=1.15.0",
+]
 
 [project.scripts]
 greenhouse-dt-cli = "greenhouse_dt_cli:main"
