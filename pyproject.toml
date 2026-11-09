@@ -1,20 +1,21 @@
 [project]
-name = "greenhouse-dt-cli"
+name = "greenhouse-digital-twin"
 version = "0.1.0"
-description = "A cli interface for the GreenhouseDT"
+description = "A digital twin for a greenhouse"
 readme = "README.md"
 authors = [
     { name = "Taylor Lineman", email = "git@actuallytaylor.com" },
     { name = "Reid Taylor", email = "reidtaylor1126@gmail.com" },
 ]
 requires-python = ">=3.14"
-dependencies = [
-    "asciimatics>=1.15.0",
-]
-
-[project.scripts]
-greenhouse-dt-cli = "greenhouse_dt_cli:main"
+dependencies = []
 
 [build-system]
 requires = ["uv_build>=0.13.3,<0.14.0"]
 build-backend = "uv_build"
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["packages/*"]
