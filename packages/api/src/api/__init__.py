@@ -1,2 +1,5 @@
+from apiflask import APIFlask
+app = APIFlask("greenhouse_dt_api")
+
 def main() -> None:
-    print("Hello from api!")
+    app.run()
