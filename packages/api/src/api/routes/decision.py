@@ -1,10 +1,9 @@
-from apiflask import APIBlueprint
-from flask import jsonify, request
+from apiflask import APIBlueprint, HTTPTokenAuth
 
 decision_bp = APIBlueprint('decision_api', __name__)
+auth = HTTPTokenAuth('Bearer')
 
-@decision_bp.post('/api/decision/strategy/', methods=['POST'])
-@decision_bp.input()
-def set_watering_strategy(strategyName: str):
-    return jsonify([]),
-
+# TODO: Implement all endpoints from DecisionController.kt
+# GET /api/decision/strategies
+# GET /api/decision/plant-strategies
+# POST /api/decision/reload
