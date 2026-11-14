@@ -2,7 +2,6 @@ from apiflask import APIBlueprint
 
 section_bp = APIBlueprint('section_api', __name__)
 
-# TODO: Implement all endpoints from SectionController.kt
 @section_bp.get('/api/sections')
 def get_all_plant():
     """Retrieve all sections"""
