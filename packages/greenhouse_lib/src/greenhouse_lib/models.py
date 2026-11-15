@@ -1,6 +1,9 @@
+from enum import Enum
+
 from pydantic import BaseModel
 
-class PlantHealthState:
+
+class PlantHealthState(int, Enum):
     HEALTHY = 0
     UNHEALTHY = 1
     DEAD = 2
