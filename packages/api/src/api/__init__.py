@@ -4,7 +4,6 @@ app = APIFlask("greenhouse_dt_api")
 
 # Import and register all blueprints
 from api.routes import (
-    decision_bp,
     plant_bp,
     pot_bp,
     water_bucket_bp,
@@ -17,7 +16,6 @@ from api.routes import (
     section_bp,
 )
 
-app.register_blueprint(decision_bp)
 app.register_blueprint(plant_bp)
 app.register_blueprint(pot_bp)
 app.register_blueprint(water_bucket_bp)
