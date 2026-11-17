@@ -41,6 +41,12 @@ class TempHumiditySensorAsset(SensorAsset):
     temperature_value: float
     humidity_value: float
 
+class PHSensorAsset(SensorAsset):
+    pass
+
+class NitrogenSensorAsset(SensorAsset):
+    pass
+
 class HealthSensorAsset(SensorAsset):
     pass
 
