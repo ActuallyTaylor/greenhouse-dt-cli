@@ -8,7 +8,9 @@ authors = [
     { name = "Reid Taylor", email = "reidtaylor1126@gmail.com" },
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "pyrefly>=0.60.0",
+]
 
 [build-system]
 requires = ["uv_build>=0.13.3,<0.14.0"]
@@ -18,4 +20,6 @@ build-backend = "uv_build"
 package = false
 
 [tool.uv.workspace]
-members = ["packages/*"]
+members = [
+    "packages/*",
+]
