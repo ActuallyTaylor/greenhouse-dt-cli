@@ -18,7 +18,8 @@ class PlantAsset(BaseModel):
 
 class PotAsset(BaseModel):
     id: int
-    plant: PlantAsset
+    # A pot can have a plant in it, or it can not.
+    plant: PlantAsset | None
     moisture_sensor: MoistureSensorAsset
     moisture: float
     pump: PumpAsset
@@ -44,6 +45,8 @@ class TempHumiditySensorAsset(SensorAsset):
 class HealthSensorAsset(SensorAsset):
     pass
 
+class NutrientSensorAsset(SensorAsset):
+    pass
 
 class ActuatorAsset(BaseModel):
     id: int
@@ -54,7 +57,6 @@ class LightSwitchAsset (ActuatorAsset):
 
 class PumpAsset (ActuatorAsset):
     pot: PotAsset
-
 
 class ShelfAsset(BaseModel):
     temp_humid_sensor: TempHumiditySensorAsset
