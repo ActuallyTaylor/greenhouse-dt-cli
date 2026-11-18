@@ -7,7 +7,7 @@ from api.routes.light_sensor import light_sensor_bp
 from api.routes.moisture_sensor import moisture_sensor_bp
 from api.routes.nutrient_sensor import nutrient_sensor_bp
 from api.routes.temperature_humidity_sensor import temperature_humidity_sensor_bp
-from api.routes.section import section_bp
+from api.routes.section import shelf_bp
 
 __all__ = [
     "plant_bp",
@@ -19,5 +19,5 @@ __all__ = [
     "moisture_sensor_bp",
     "nutrient_sensor_bp",
     "temperature_humidity_sensor_bp",
-    "section_bp",
+    "shelf_bp",
 ]

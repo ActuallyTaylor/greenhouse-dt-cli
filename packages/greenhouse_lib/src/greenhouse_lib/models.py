@@ -18,8 +18,7 @@ class PlantAsset(BaseModel):
 
 class PotAsset(BaseModel):
     id: int
-    # A pot can have a plant in it, or it can not.
-    plant: PlantAsset | None
+    plant: PlantAsset
     moisture_sensor: MoistureSensorAsset
     moisture: float
     pump: PumpAsset
