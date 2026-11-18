@@ -6,7 +6,6 @@ app = APIFlask("greenhouse_dt_api")
 from api.routes import (
     plant_bp,
     pot_bp,
-    water_bucket_bp,
     pump_bp,
     light_switch_bp,
     light_sensor_bp,
@@ -18,7 +17,6 @@ from api.routes import (
 
 app.register_blueprint(plant_bp)
 app.register_blueprint(pot_bp)
-app.register_blueprint(water_bucket_bp)
 app.register_blueprint(pump_bp)
 app.register_blueprint(light_switch_bp)
 app.register_blueprint(light_sensor_bp)
