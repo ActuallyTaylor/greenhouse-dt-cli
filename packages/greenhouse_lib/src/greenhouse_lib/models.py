@@ -50,6 +50,8 @@ class NitrogenSensorAsset(SensorAsset):
 class HealthSensorAsset(SensorAsset):
     pass
 
+class NutrientSensorAsset(SensorAsset):
+    pass
 
 class ActuatorAsset(BaseModel):
     id: int
@@ -60,7 +62,6 @@ class LightSwitchAsset (ActuatorAsset):
 
 class PumpAsset (ActuatorAsset):
     pot: PotAsset
-
 
 class ShelfAsset(BaseModel):
     temp_humid_sensor: TempHumiditySensorAsset
