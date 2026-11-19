@@ -9,7 +9,7 @@ authors = [
 ]
 requires-python = ">=3.14"
 dependencies = [
-    "pyrefly>=0.60.0",
+    "pydantic>=2.14.3",
 ]
 
 [build-system]
@@ -20,6 +20,4 @@ build-backend = "uv_build"
 package = false
 
 [tool.uv.workspace]
-members = [
-    "packages/*",
-]
+members = ["packages/*"]
