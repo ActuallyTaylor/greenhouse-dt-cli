@@ -1,20 +1,18 @@
-import math
-from pydantic import BaseModel
-
-from sklearn.ensemble import RandomForestRegressor
-import kagglehub
-import pandas as pd
-from matplotlib import pyplot as plt
-import seaborn as sns
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
-from xgboost import XGBClassifier
-
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.linear_model import LinearRegression, LogisticRegression
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, confusion_matrix, accuracy_score, \
-    precision_score
-from sklearn.preprocessing import LabelEncoder
-
+# import math
+# from pydantic import BaseModel
+# from sklearn.ensemble import RandomForestRegressor
+# import kagglehub
+# import pandas as pd
+# from matplotlib import pyplot as plt
+# import seaborn as sns
+# from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+# from xgboost import XGBClassifier
+#
+# from sklearn.model_selection import train_test_split, cross_val_score
+# from sklearn.linear_model import LinearRegression, LogisticRegression
+# from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, confusion_matrix, accuracy_score, \
+#     precision_score
+# from sklearn.preprocessing import LabelEncoder
 
 # def train_plant_model():
 #     # Download latest version
@@ -64,40 +62,3 @@ from sklearn.preprocessing import LabelEncoder
 #     print("CV R2:", cross_val_score(model, X, y, cv=5, scoring="r2").mean())
 #
 #     print(pd.Series(model.feature_importances_, index=features).sort_values(ascending=False))
-
-def vdp(temperature: float, relative_humidity: float) -> float:
-    """
-    Computes the Vapor-pressure deficit for a greenhouse
-    Based on: https://en.wikipedia.org/wiki/Vapour-pressure_deficit#Computing_VPD_for_plants_in_a_greenhouse
-    :param temperature:
-    :return:
-    """
-    A = -1.0440397e4
-    B = -11.29465
-    C = -2.7022355e-2
-    D = 1.289036e-5
-    E = -2.4780681e-9
-    F = 6.545973
-
-    rankine_temperature = temperature + 459.67
-    exponent = (A / rankine_temperature) + B + (C * rankine_temperature) + (math.pow(D * rankine_temperature, 2)) + (math.pow(E * rankine_temperature, 3)) + (F * math.log(rankine_temperature))
-    saturation_vapor_pressure = math.pow(math.e, exponent)
-
-    vapor_pressure_deficit = saturation_vapor_pressure * (1 - (relative_humidity / 100))
-
-    return vapor_pressure_deficit
-
-class ParameterPack(BaseModel):
-    min: float
-    max: float
-
-class PlantParameters(BaseModel):
-    vdp: ParameterPack
-
-tomato_parameters = PlantParameters(
-    # Ideal range for VDP for a tomato: https://vpdcharts.com/ideal-vpd-for-tomatoes/
-    vdp=ParameterPack(min=0.8, max=1.2),
-)
-
-def physical_plant_model(parameters):
-    pass
