@@ -16,10 +16,6 @@ class DecisionOutput(NamedTuple):
     pump: PumpControlOutput
     light_on: bool
 
-    def __init__(self, pump_control: PumpControlOutput, light_on: bool):
-        self.pump = pump_control
-        self.light_on = light_on
-
 class GrowthStrategy:
     def update(self, temperature: float, humidity: float, nitrogen, moisture, light, ph_level):
         pass

@@ -1,6 +1,7 @@
-import math
 
+import numpy as np
 from greenhouse_lib.model.models import GrowthStrategy, DecisionOutput, PumpControlOutput
+from greenhouse_lib.model.parameters import PlantParameters
 
 
 # MARK: Static Methods
@@ -20,27 +21,51 @@ def vdp(temperature: float, relative_humidity: float) -> float:
     F = 6.545973
 
     rankine_temperature = temperature + 459.67
-    exponent = (A / rankine_temperature) + B + (C * rankine_temperature) + (math.pow(D * rankine_temperature, 2)) + (math.pow(E * rankine_temperature, 3)) + (F * math.log(rankine_temperature))
-    saturation_vapor_pressure = math.pow(math.e, exponent)
+    exponent = (A / rankine_temperature) + B + (C * rankine_temperature) + ((D * rankine_temperature) ** 2) + ((E * rankine_temperature) ** 3) + (F * np.log(rankine_temperature))
+    saturation_vapor_pressure = np.e ** exponent
 
     vapor_pressure_deficit = saturation_vapor_pressure * (1 - (relative_humidity / 100))
 
     return vapor_pressure_deficit
 
+def out_of_range_penalty(min_value: float | int, max_value: float | int, value: float | int, weight: float | int = 1) -> float | int:
+    """
+    Penalizes values based on how far from the middle of the range they are. Values outside the range are penalized twice as hard.
+    :param min_value: Range minimum
+    :param max_value: Range maximum
+    :param value: Value to calculate penalty for.
+    :param weight: Weight of the penalty.
+    :return: Penalty for how far value is from the center of the range.
+    """
+
+    median = (min_value + max_value) / 2
+
+    # Drop the weight by 0.5 if we are in range.
+    if min_value < value < max_value:
+        weight = weight * 0.5
+
+    return weight * (np.abs(value - median) ** 2)
+
+
 # MARK: Growth Strategy
 class BasicGrowthStrategy(GrowthStrategy):
+    plant: PlantParameters
+
     # Current temperature, °C
     temperature: float | int = 0
     # Relative humidity, %
     relative_humidity: float | int = 0
-    # Current level of nitrogen in the soil, mg/kg
+    # Current level of nitrogen in the soil, parts per million (ppm)
     nitrogen: float | int = 0
-    # Moisture % of the soil
+    # Relative moisture % of the soil
     moisture: float | int = 0
     # Current light level in Photosynthetic Photon Flux Density (PPFD), µmol/m²/s.
     light: float | int = 0
     # Current ph level of the soil (0-14)
     ph_level: float | int = 0
+
+    def __init__(self, plant: PlantParameters):
+        self.plant = plant
 
     def update(self, temperature: float, humidity: float, nitrogen, moisture, light, ph_level):
         self.temperature = temperature
@@ -51,7 +76,20 @@ class BasicGrowthStrategy(GrowthStrategy):
         self.ph_level = ph_level
 
     def decide(self) -> DecisionOutput:
+        # Calculate how much far out of the vapor pressure deficit range we are.
         vapor_pressure_deficit = vdp(self.temperature, self.relative_humidity)
+        vpd_penalty = out_of_range_penalty(self.plant.vdp.min, self.plant.vdp.max, vapor_pressure_deficit)
+
+        # Calculates how far out of the preferred nitrogen range we are.
+        nitrogen_out_of_range_penalty = out_of_range_penalty(self.plant.nitrogen.min, self.plant.nitrogen.max, self.nitrogen)
+
+        # Calculates how far out of the preferred moisture range we are.
+        moisture_out_of_range_penalty = out_of_range_penalty(self.plant.moisture.min, self.plant.moisture.max, self.moisture)
+
+        # Calculates how far out of the ph range we are.
+        ph_out_of_range_penalty = out_of_range_penalty(self.plant.ph.min, self.plant.ph.max, self.ph_level)
+
+        
 
         return DecisionOutput(PumpControlOutput.NONE, False)
 
