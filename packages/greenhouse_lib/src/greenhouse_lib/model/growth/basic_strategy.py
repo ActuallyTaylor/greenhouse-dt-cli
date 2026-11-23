@@ -6,30 +6,6 @@ from greenhouse_lib.model.parameters import PlantParameters
 
 
 # MARK: Static Methods
-def vdp(temperature: float, relative_humidity: float) -> float:
-    """
-    Computes the Vapor-pressure deficit for a greenhouse
-    Based on: https://en.wikipedia.org/wiki/Vapour-pressure_deficit#Computing_VPD_for_plants_in_a_greenhouse
-    :param relative_humidity:
-    :param temperature:
-    :return:
-    """
-    A = -1.0440397e4
-    B = -11.29465
-    C = -2.7022355e-2
-    D = 1.289036e-5
-    E = -2.4780681e-9
-    F = 6.545973
-
-    rankine_temperature = temperature + 459.67
-    exponent = (A / rankine_temperature) + B + (C * rankine_temperature) + ((D * rankine_temperature) ** 2) + ((E * rankine_temperature) ** 3) + (F * np.log(rankine_temperature))
-    saturation_vapor_pressure = np.e ** exponent
-
-    vapor_pressure_deficit = saturation_vapor_pressure * (1 - (relative_humidity / 100))
-
-    return vapor_pressure_deficit
-
-
 def percentage_out_of_range(value: float | int, minimum: float | int, maximum: float | int):
     # Avoid divide by zero errors.
     if minimum == maximum:
@@ -79,21 +55,6 @@ class BasicGrowthStrategy(GrowthStrategy):
             # If we are below 75% of the range, or we are negative in the range, turn the light on.
             return True
 
-    def make_vpd_decision(self) -> PumpControlOutput:
-        # Calculate how much far out of the vapor pressure deficit range we are.
-        vapor_pressure_deficit = vdp(self.temperature, self.relative_humidity)
-        vpd_out_of_range = percentage_out_of_range(vapor_pressure_deficit, self.plant.vpd.min, self.plant.vpd.max)
-
-        # In the case of VPD, low VPD means there is already enough water in the soil. In the case of a high VPD, there is not enough wateri n the system.
-        if vpd_out_of_range >= 75:
-            return PumpControlOutput.LONG
-        elif vpd_out_of_range >= 50:
-            return PumpControlOutput.MEDIUM
-        elif vpd_out_of_range >= 25:
-            return PumpControlOutput.SHORT
-        else:
-            return PumpControlOutput.NONE
-
     def make_nitrogen_decision(self) -> PumpControlOutput:
         nitrogen_out_of_range = percentage_out_of_range(self.nitrogen, self.plant.nitrogen.min, self.plant.nitrogen.max)
 
@@ -124,10 +85,9 @@ class BasicGrowthStrategy(GrowthStrategy):
     def decide(self) -> DecisionOutput:
         nutrient_pump_votes: list[PumpControlOutput] = []
         water_pump_votes: list[PumpControlOutput] = []
-        light_decision = self.make_light_decision()
 
-        # Vapor Pressure Deficit decision
-        water_pump_votes.append(self.make_vpd_decision())
+        # Decide whether or not to enable the lights
+        light_decision = self.make_light_decision()
 
         # Soil moisture decision
         water_pump_votes.append(self.make_moisture_decision())
@@ -145,7 +105,3 @@ class BasicGrowthStrategy(GrowthStrategy):
         selected_nutrient_pump_decision = nutrient_pump_decisions[0]
 
         return DecisionOutput(selected_water_pump_decision, selected_nutrient_pump_decision, light_decision)
-
-    # Nitrogen Stress, pH Stress
-    # Moisture?
-    # Light sensor in PPFD, for Daily Light Integral

@@ -20,3 +20,12 @@ def test_growth_decision():
     assert decision.light_on == True
     assert decision.water_pump == PumpControlOutput.MEDIUM
     assert decision.nutrient_pump == PumpControlOutput.MEDIUM
+
+
+def test_vpd_decision():
+    growth_strategy = BasicGrowthStrategy(tomato_parameters)
+
+    growth_strategy.temperature = 30
+    growth_strategy.relative_humidity = 20
+
+    print(growth_strategy.make_vpd_decision())
