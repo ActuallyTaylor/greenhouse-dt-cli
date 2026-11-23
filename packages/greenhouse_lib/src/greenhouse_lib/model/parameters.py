@@ -21,6 +21,7 @@ class PlantParameters:
         self.nitrogen = nitrogen
         self.moisture = moisture
         self.ph = ph
+        self.light = light
 
 tomato_parameters = PlantParameters(
     # Ideal range for VDP for a tomato: https://vpdcharts.com/ideal-vpd-for-tomatoes/

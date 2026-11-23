@@ -69,60 +69,71 @@ class BasicGrowthStrategy(GrowthStrategy):
         self.light = light
         self.ph_level = ph_level
 
-    def decide(self) -> DecisionOutput:
-        nutrient_pump_votes: list[PumpControlOutput] = []
-        water_pump_votes: list[PumpControlOutput] = []
-        light_decision = False
+    def make_light_decision(self) -> bool:
+        light_out_of_range = percentage_out_of_range(self.light, self.plant.light.min, self.plant.light.max)
 
-        light_out_of_range = percentage_out_of_range(self.light)
-
-        if light_out_of_range > 100:
-            # We are above the range
-            light_decision = False
-        elif light_out_of_range > 75:
+        if light_out_of_range > 75:
             # We are in the top 75% of the range
-            light_decision = False
+            return False
         else:
             # If we are below 75% of the range, or we are negative in the range, turn the light on.
-            light_decision = True
+            return True
 
+    def make_vpd_decision(self) -> PumpControlOutput:
         # Calculate how much far out of the vapor pressure deficit range we are.
         vapor_pressure_deficit = vdp(self.temperature, self.relative_humidity)
         vpd_out_of_range = percentage_out_of_range(vapor_pressure_deficit, self.plant.vpd.min, self.plant.vpd.max)
 
         # In the case of VPD, low VPD means there is already enough water in the soil. In the case of a high VPD, there is not enough wateri n the system.
         if vpd_out_of_range >= 75:
-            water_pump_votes.append(PumpControlOutput.LONG)
+            return PumpControlOutput.LONG
         elif vpd_out_of_range >= 50:
-            water_pump_votes.append(PumpControlOutput.MEDIUM)
+            return PumpControlOutput.MEDIUM
         elif vpd_out_of_range >= 25:
-            water_pump_votes.append(PumpControlOutput.SHORT)
+            return PumpControlOutput.SHORT
         else:
-            water_pump_votes.append(PumpControlOutput.NONE)
+            return PumpControlOutput.NONE
 
+    def make_nitrogen_decision(self) -> PumpControlOutput:
         nitrogen_out_of_range = percentage_out_of_range(self.nitrogen, self.plant.nitrogen.min, self.plant.nitrogen.max)
 
         # Calculates how far out of the preferred nitrogen range we are.
         if nitrogen_out_of_range >= 100:
-            nutrient_pump_votes.append(PumpControlOutput.NONE)
+            return PumpControlOutput.NONE
         elif nitrogen_out_of_range >= 75:
-            nutrient_pump_votes.append(PumpControlOutput.SHORT)
+            return PumpControlOutput.SHORT
         elif nitrogen_out_of_range >= 50:
-            nutrient_pump_votes.append(PumpControlOutput.MEDIUM)
+            return PumpControlOutput.MEDIUM
         else:
-            nutrient_pump_votes.append(PumpControlOutput.LONG)
+            return PumpControlOutput.LONG
 
+    def make_moisture_decision(self) -> PumpControlOutput:
         moisture_out_of_range = percentage_out_of_range(self.moisture, self.plant.moisture.min, self.plant.moisture.max)
 
         # Calculates how far out of the preferred moisture range we are.
         if moisture_out_of_range >= 100:
-            water_pump_votes.append(PumpControlOutput.NONE)
+            return PumpControlOutput.NONE
         elif moisture_out_of_range >= 75:
-            water_pump_votes.append(PumpControlOutput.SHORT)
+            return PumpControlOutput.SHORT
         elif moisture_out_of_range >= 50:
-            water_pump_votes.append(PumpControlOutput.MEDIUM)
+            return PumpControlOutput.MEDIUM
         else:
-            water_pump_votes.append(PumpControlOutput.LONG)
+            return PumpControlOutput.LONG
+
+
+    def decide(self) -> DecisionOutput:
+        nutrient_pump_votes: list[PumpControlOutput] = []
+        water_pump_votes: list[PumpControlOutput] = []
+        light_decision = self.make_light_decision()
+
+        # Vapor Pressure Deficit decision
+        water_pump_votes.append(self.make_vpd_decision())
+
+        # Soil moisture decision
+        water_pump_votes.append(self.make_moisture_decision())
+
+        # Nitrogen decision
+        nutrient_pump_votes.append(self.make_nitrogen_decision())
 
         water_pump_counts = Counter(water_pump_votes)
         water_pump_decisions = sorted(water_pump_votes, key=lambda x: -water_pump_counts[x])

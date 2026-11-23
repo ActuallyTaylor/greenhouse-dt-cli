@@ -1,18 +1,17 @@
-from greenhouse_lib.model.growth.basic_strategy import percentage_out_of_range
+from greenhouse_lib.model.growth.basic_strategy import percentage_out_of_range, BasicGrowthStrategy
+from greenhouse_lib.model.models import GrowthStrategy, DecisionOutput
 import matplotlib.pyplot as plt
 
+from greenhouse_lib.model.parameters import tomato_parameters
+
+def run_decision_and_update(strategy: GrowthStrategy, temperature: float, humidity: float, nitrogen, moisture, light,
+                            ph_level) -> DecisionOutput:
+    strategy.update(temperature, humidity, nitrogen, moisture, light, ph_level)
+    return strategy.decide()
+
 def main() -> None:
-    test_range = range(0, 100)
-    max = 50
-    min = 40
+    growth_strategy = BasicGrowthStrategy(tomato_parameters)
 
-    values = []
+    decision = run_decision_and_update(growth_strategy, 70, 70, 20, 60, 500, 6)
 
-    for x in test_range:
-        # values.append(percentage_out_of_range(x, max, min))
-        print('x', x, percentage_out_of_range(x, max, min))
-
-    print(values)
-    plt.plot(values)
-    plt.ylabel('Values')
-    plt.show()
+    print(decision)
