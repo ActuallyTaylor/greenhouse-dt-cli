@@ -10,6 +10,7 @@ authors = [
 requires-python = ">=3.14"
 dependencies = [
     "asciimatics>=1.15.0",
+    "greenhouse-lib",
 ]
 
 [project.scripts]
@@ -21,3 +22,4 @@ build-backend = "uv_build"
 
 [tool.uv.sources]
 cli = { workspace = true }
+greenhouse-lib = { workspace = true }

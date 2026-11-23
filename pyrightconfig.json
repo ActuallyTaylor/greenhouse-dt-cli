@@ -1,0 +1,10 @@
+{
+  "venvPath": ".",
+  "venv": ".venv",
+  "extraPaths": [
+    "packages/greenhouse_lib/src",
+    "packages/cli/src",
+    "packages/api/src",
+    "packages/digital_twin/src"
+  ]
+}
