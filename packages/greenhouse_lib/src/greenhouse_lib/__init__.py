@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 
 def main() -> None:
     test_range = range(0, 100)
-    max = 25
-    min = 50
+    max = 35
+    min = 65
 
     values = []
 

@@ -13,7 +13,8 @@ class PumpControlOutput(Enum):
     LONG = 3
 
 class DecisionOutput(NamedTuple):
-    pump: PumpControlOutput
+    water_pump: PumpControlOutput
+    nutrient_pump: PumpControlOutput
     light_on: bool
 
 class GrowthStrategy:

@@ -28,24 +28,6 @@ def vdp(temperature: float, relative_humidity: float) -> float:
 
     return vapor_pressure_deficit
 
-def out_of_range_penalty(min_value: float | int, max_value: float | int, value: float | int, weight: float | int = 1) -> float | int:
-    """
-    Penalizes values based on how far from the middle of the range they are. Values outside the range are penalized twice as hard.
-    :param min_value: Range minimum
-    :param max_value: Range maximum
-    :param value: Value to calculate penalty for.
-    :param weight: Weight of the penalty.
-    :return: Penalty for how far value is from the center of the range.
-    """
-
-    median = (min_value + max_value) / 2
-
-    # Drop the weight by 0.5 if we are in range.
-    if min_value < value < max_value:
-        weight = weight * 0.5
-
-    return weight * (np.abs(value - median) ** 2)
-
 
 # MARK: Growth Strategy
 class BasicGrowthStrategy(GrowthStrategy):
@@ -76,22 +58,35 @@ class BasicGrowthStrategy(GrowthStrategy):
         self.ph_level = ph_level
 
     def decide(self) -> DecisionOutput:
+        nutrient_pump_decision = PumpControlOutput.NONE
+        water_pump_decision = PumpControlOutput.NONE
+        light_decision = False
+
+        if self.light < self.plant.light.min:
+            light_decision = True
+        elif self.light > self.plant.light.max:
+            light_decision = False
+
         # Calculate how much far out of the vapor pressure deficit range we are.
         vapor_pressure_deficit = vdp(self.temperature, self.relative_humidity)
-        vpd_penalty = out_of_range_penalty(self.plant.vdp.min, self.plant.vdp.max, vapor_pressure_deficit)
 
-        # Calculates how far out of the preferred nitrogen range we are.
-        nitrogen_out_of_range_penalty = out_of_range_penalty(self.plant.nitrogen.min, self.plant.nitrogen.max, self.nitrogen)
 
-        # Calculates how far out of the preferred moisture range we are.
-        moisture_out_of_range_penalty = out_of_range_penalty(self.plant.moisture.min, self.plant.moisture.max, self.moisture)
+        # vpd_penalty = out_of_range_penalty(self.plant.vdp.min, self.plant.vdp.max, vapor_pressure_deficit)
+        #
+        # # Calculates how far out of the preferred nitrogen range we are.
+        # nitrogen_out_of_range_penalty = out_of_range_penalty(self.plant.nitrogen.min, self.plant.nitrogen.max, self.nitrogen)
+        #
+        # # Calculates how far out of the preferred moisture range we are.
+        # moisture_out_of_range_penalty = out_of_range_penalty(self.plant.moisture.min, self.plant.moisture.max, self.moisture)
 
-        # Calculates how far out of the ph range we are.
-        ph_out_of_range_penalty = out_of_range_penalty(self.plant.ph.min, self.plant.ph.max, self.ph_level)
 
-        
+        if self.nitrogen < self.plant.nitrogen.min:
+             nutrient_pump_decision = PumpControlOutput.NONE
+        elif self.nitrogen < self.plant.nitrogen.max:
+            nutrient_pump_decision = PumpControlOutput.NONE
 
-        return DecisionOutput(PumpControlOutput.NONE, False)
+
+        return DecisionOutput(water_pump_decision, nutrient_pump_decision, light_decision)
 
     # Nitrogen Stress, pH Stress
     # Moisture?

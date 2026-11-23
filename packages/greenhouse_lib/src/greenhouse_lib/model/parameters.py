@@ -1,3 +1,5 @@
+from PIL.ImageChops import lighter
+
 
 class ParameterPack:
     min: float
@@ -12,8 +14,9 @@ class PlantParameters:
     nitrogen: ParameterPack
     moisture: ParameterPack
     ph: ParameterPack
+    light: ParameterPack
 
-    def __init__(self, vdp: ParameterPack, nitrogen: ParameterPack, moisture: ParameterPac, ph: ParameterPack):
+    def __init__(self, vdp: ParameterPack, nitrogen: ParameterPack, moisture: ParameterPack, ph: ParameterPack, light: ParameterPack):
         self.vdp = vdp
         self.nitrogen = nitrogen
         self.moisture = moisture
@@ -28,4 +31,6 @@ tomato_parameters = PlantParameters(
     moisture=ParameterPack(min=50, max=70),
     # Ideal ph range for tomato soil: https://extension.rutgers.edu/fs678
     ph=ParameterPack(min=6, max=6.5),
+    # Idea light range for tomatoes: https://www.thriveagritech.com/blog-posts/tomato-lighting-requirements-greenhouse-dli-ppfd-guide
+    light=ParameterPack(min=400,max=600)
 )
