@@ -10,21 +10,21 @@ class ParameterPack:
         self.max = max
 
 class PlantParameters:
-    vdp: ParameterPack
+    vpd: ParameterPack
     nitrogen: ParameterPack
     moisture: ParameterPack
     ph: ParameterPack
     light: ParameterPack
 
-    def __init__(self, vdp: ParameterPack, nitrogen: ParameterPack, moisture: ParameterPack, ph: ParameterPack, light: ParameterPack):
-        self.vdp = vdp
+    def __init__(self, vpd: ParameterPack, nitrogen: ParameterPack, moisture: ParameterPack, ph: ParameterPack, light: ParameterPack):
+        self.vpd = vpd
         self.nitrogen = nitrogen
         self.moisture = moisture
         self.ph = ph
 
 tomato_parameters = PlantParameters(
     # Ideal range for VDP for a tomato: https://vpdcharts.com/ideal-vpd-for-tomatoes/
-    vdp=ParameterPack(min=0.8, max=1.2),
+    vpd=ParameterPack(min=0.8, max=1.2),
     # Ideal range for nitrogen ppm: https://extension.colostate.edu/resource/vegetable-gardening-nitrogen-recommendations/
     nitrogen=ParameterPack(min=15,max=40),
     # Ideal range for tomato soil: https://lawngardenpro.com/how-wet-should-tomato-plant-soil-be/
