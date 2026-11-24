@@ -3,33 +3,7 @@ from collections import Counter
 import numpy as np
 from greenhouse_lib.model.models import GrowthStrategy, DecisionOutput, PumpControlOutput
 from greenhouse_lib.model.parameters import PlantParameters
-from greenhouse_lib.model.utility import percentage_out_of_range
-
-
-# MARK: Static Methods
-def vpd(temperature: float, relative_humidity: float) -> float:
-    """
-    Computes the Vapor-pressure deficit for a greenhouse
-    Based on: https://en.wikipedia.org/wiki/Vapour-pressure_deficit#Computing_VPD_for_plants_in_a_greenhouse
-    :param relative_humidity:
-    :param temperature: Degrees Farenheit of the outside temperature
-    :return:
-    """
-    A = -1.0440397e4
-    B = -11.29465
-    C = -2.7022355e-2
-    D = 1.289036e-5
-    E = -2.4780681e-9
-    F = 6.5459673
-
-    rankine_temperature = temperature + 459.67
-    exponent = (A / rankine_temperature) + B + (C * rankine_temperature) + D * (rankine_temperature ** 2) + E * (rankine_temperature ** 3) + (F * np.log(rankine_temperature))
-    saturation_vapor_pressure = np.e ** exponent
-
-    vapor_pressure_deficit = saturation_vapor_pressure * (1 - (relative_humidity / 100))
-
-    # Convert the VPD in PSI to kPa
-    return vapor_pressure_deficit * 6.894757
+from greenhouse_lib.model.utility import percentage_out_of_range, vpd
 
 
 # MARK: Growth Strategy
