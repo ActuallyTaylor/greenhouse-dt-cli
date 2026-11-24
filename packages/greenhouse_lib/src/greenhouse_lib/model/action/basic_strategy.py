@@ -1,6 +1,5 @@
 from collections import Counter
 
-import numpy as np
 from greenhouse_lib.model.models import ActionStrategy, DecisionOutput, PumpControlOutput, PlantEnvironment, \
     PlantParameters
 from greenhouse_lib.model.utility import percentage_out_of_range, vpd
@@ -44,6 +43,19 @@ class BasicActionStrategy(ActionStrategy):
             # If we are below 75% of the range, or we are negative in the range, turn the light on.
             return True
 
+    def make_nitrogen_decision(self) -> PumpControlOutput:
+        nitrogen_out_of_range = percentage_out_of_range(self.nitrogen, self.plant.nitrogen.min, self.plant.nitrogen.max)
+
+        # Calculates how far out of the preferred nitrogen range we are.
+        if nitrogen_out_of_range >= 100:
+            return PumpControlOutput.NONE
+        elif nitrogen_out_of_range >= 75:
+            return PumpControlOutput.SHORT
+        elif nitrogen_out_of_range >= 50:
+            return PumpControlOutput.MEDIUM
+        else:
+            return PumpControlOutput.LONG
+
     def make_vpd_decision(self) -> PumpControlOutput:
         # Calculate how much far out of the vapor pressure deficit range we are.
         vapor_pressure_deficit = vpd(self.temperature, self.relative_humidity)
@@ -58,19 +70,6 @@ class BasicActionStrategy(ActionStrategy):
             return PumpControlOutput.SHORT
         else:
             return PumpControlOutput.NONE
-
-    def make_nitrogen_decision(self) -> PumpControlOutput:
-        nitrogen_out_of_range = percentage_out_of_range(self.nitrogen, self.plant.nitrogen.min, self.plant.nitrogen.max)
-
-        # Calculates how far out of the preferred nitrogen range we are.
-        if nitrogen_out_of_range >= 100:
-            return PumpControlOutput.NONE
-        elif nitrogen_out_of_range >= 75:
-            return PumpControlOutput.SHORT
-        elif nitrogen_out_of_range >= 50:
-            return PumpControlOutput.MEDIUM
-        else:
-            return PumpControlOutput.LONG
 
     def make_moisture_decision(self) -> PumpControlOutput:
         moisture_out_of_range = percentage_out_of_range(self.moisture, self.plant.moisture.min, self.plant.moisture.max)
