@@ -2,7 +2,6 @@ from enum import Enum
 from random import uniform
 from typing import NamedTuple
 
-
 class ParameterPack:
     min: float
     max: float
@@ -71,11 +70,6 @@ class DecisionOutput(NamedTuple):
     water_pump: PumpControlOutput
     nutrient_pump: PumpControlOutput
     light_on: bool
-
-
-class PlantStressModel:
-    def predict(self, temperature: float, humidity: float, nitrogen, moisture, light, ph_level) -> float:
-        pass
 
 
 class PlantEnvironment:
@@ -151,7 +145,7 @@ class GrowthStrategy:
         pass
 
 
-class Plant:
+class PlantModel:
     """
     A model of a plant that uses growth and depletion strategies
     This model uses a `ActionStrategy` and `DepletionStrategy` to slowly deplete the values in the plant.
@@ -205,3 +199,21 @@ class Plant:
         # Update the environment with the decisions we just made.
         self.environment = self.growth_strategy.apply_decision(decisions, self.environment)
         return decisions
+
+    def stress(self) -> float:
+        """
+        A quick and dirty calculation of how stressed out a plant is based on how far out of the normal operating conditions
+        the plant is.
+        :returns a basic stress indicator for the plant's current health based on the environment
+        """
+        # Import here since this would pollute the top level imports of this file.
+        from greenhouse_lib.model.utility import deviation, percentage_out_of_range, vpd
+
+        light_deviation = deviation(percentage_out_of_range(self.environment.light, self.plant.light.min, self.plant.light.max))
+        nitrogen_deviation = deviation(percentage_out_of_range(self.environment.nitrogen, self.plant.nitrogen.min, self.plant.nitrogen.max))
+        moisture_deviation = deviation(percentage_out_of_range(self.environment.moisture, self.plant.moisture.min, self.plant.moisture.max))
+
+        vapor_pressure_deficit = vpd(self.environment.temperature, self.environment.relative_humidity)
+        vpd_deviation = deviation(percentage_out_of_range(vapor_pressure_deficit, self.plant.vpd.min, self.plant.vpd.max))
+
+        return light_deviation + nitrogen_deviation + moisture_deviation + vpd_deviation

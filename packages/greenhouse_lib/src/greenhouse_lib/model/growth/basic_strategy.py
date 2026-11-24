@@ -1,5 +1,4 @@
-from greenhouse_lib.model.models import DepletionStrategy, PlantEnvironment, GrowthStrategy, DecisionOutput, \
-    PumpControlOutput, PlantParameters, PumpPack
+from greenhouse_lib.model.models import PlantEnvironment, GrowthStrategy, DecisionOutput, PlantParameters, PumpPack
 
 
 class BasicGrowthStrategy(GrowthStrategy):
