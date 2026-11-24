@@ -42,9 +42,6 @@ class BasicDepletionStrategy(DepletionStrategy):
         vapor_pressure_deficit = vpd(self.temperature, self.relative_humidity)
         vpd_deviation = deviation(percentage_out_of_range(vapor_pressure_deficit, self.plant.vpd.min, self.plant.vpd.max))
 
-        # water_mult = max(0.0, 1 + 1.0 * vpd_deviation + 0.5* light_deviation - 0.3*max(nitrogen_d, 0))
-        # self.moisture = max(0.0, self.moisture - BASE_MOISTURE_LOSS * water_mult)
-
         # Baseline water loss
         water_mult = BASE_MOISTURE_LOSS
         nitrogen_mult = BASE_NITROGEN_LOSS
