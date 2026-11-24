@@ -1,12 +1,10 @@
 import sys
 
 from asciimatics.exceptions import ResizeScreenError
-from asciimatics.paths import Path
-from asciimatics.scene import Scene
 from asciimatics.screen import Screen
 
 from cli.cli_state import CLIState, DummyDepletionModel, DummyStressModel
-from cli.ui_components import Controls, GreenhouseScene, PlantSprite, SimStats
+from cli.ui_components import GreenhouseScene
 
 
 def greenhouse(screen: Screen):
