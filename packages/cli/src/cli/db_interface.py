@@ -1,9 +1,11 @@
-import dotenv, influxdb_client, os, time
+import sys
 from dataclasses import dataclass
+
+import dotenv
 from influxdb_client.client.influxdb_client import InfluxDBClient
 from influxdb_client.client.write.point import Point
-from influxdb_client.domain.write_precision import WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
+
 
 @dataclass
 class PlantSnapshot:
@@ -24,7 +26,7 @@ class InfluxDBInterface:
         token = dotenv.dotenv_values()["INFLUXDB_TOKEN"]
         if token is None:
             print("Missing INFLUXDB_TOKEN in .env")
-            exit()
+            sys.exit()
         self.org = "greenhouse"
         self.bucket = bucket
         url = "http://localhost:8086"
