@@ -13,7 +13,7 @@ This package is broken into four sub-packages with defined behaviors.
 - The digital twin is the main focus of this repository. It defines the adaptation methods, greenhouse simulation and twin behavior.`
 - The API package is a REST api written with Flask that allow clients to interact with and use the digital twin.
 - The CLI package is a command line interface that mimicks a physical greenhouse.
-- Greenhouse Lib is a library that contains standard models for the project. THis allows the CLI, API and Digital Twin to operate on the same model definitions.
+- Greenhouse Lib is a library that contains standard models for the project. This allows the CLI, API and Digital Twin to operate on the same model definitions.
 
 ```mermaid
 flowchart RL

@@ -26,6 +26,8 @@ class BasicDepletionStrategy(DepletionStrategy):
         vpd_deviation = deviation(
             percentage_out_of_range(vapor_pressure_deficit, self.plant.vpd.min, self.plant.vpd.max))
 
+        # TODO: Move out magic numbers
+
         # Baseline water loss
         water_mult = self.base_moisture_loss
         nitrogen_mult = self.base_nitrogen_loss
