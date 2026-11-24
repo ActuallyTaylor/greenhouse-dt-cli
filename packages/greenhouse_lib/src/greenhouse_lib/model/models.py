@@ -27,3 +27,6 @@ class GrowthStrategy:
 class DepletionStrategy:
     def update(self, temperature: float, humidity: float, nitrogen, moisture, light, ph_level):
         pass
+
+    def step(self):
+        pass

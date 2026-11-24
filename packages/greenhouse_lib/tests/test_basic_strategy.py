@@ -1,6 +1,6 @@
 import pytest
 
-from greenhouse_lib.model.growth.basic_strategy import percentage_out_of_range, BasicGrowthStrategy
+from greenhouse_lib.model.growth.basic_strategy import BasicGrowthStrategy
 from greenhouse_lib.model.models import GrowthStrategy, DecisionOutput, PumpControlOutput
 
 from greenhouse_lib.model.parameters import tomato_parameters
@@ -25,7 +25,7 @@ def test_growth_decision():
 def test_vpd_decision():
     growth_strategy = BasicGrowthStrategy(tomato_parameters)
 
-    growth_strategy.temperature = 30
-    growth_strategy.relative_humidity = 20
+    growth_strategy.temperature = 75
+    growth_strategy.relative_humidity = 65
 
     print(growth_strategy.make_vpd_decision())
