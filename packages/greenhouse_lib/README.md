@@ -13,11 +13,11 @@ The growth strategy applies decision made by an `ActionStrategy`, based on asset
 ```python
 nutrient_pump_parameters = PumpPack(
     # 250 mL, 6.25 ppm into soil
-    long=PumpBonuses(nitrogen=ParameterPack(min=5.25, max=7.25), moisture=ParameterPack(min=50, max=70)),
+    long=PumpBonuses(nitrogen=ParameterPack(min=5.25, max=7.25), moisture=ParameterPack(min=3.66, max=4.66)),
     # 125 mL, 3.125 ppm into soil
-    medium=PumpBonuses(nitrogen=ParameterPack(min=2.125, max=4.125), moisture=ParameterPack(min=50, max=70)),
+    medium=PumpBonuses(nitrogen=ParameterPack(min=2.125, max=4.125), moisture=ParameterPack(min=1.58, max=2.58)),
     # 75 mL, 1.875 ppm into soil
-    short=PumpBonuses(nitrogen=ParameterPack(min=0.875, max=2.875), moisture=ParameterPack(min=50, max=70))
+    short=PumpBonuses(nitrogen=ParameterPack(min=0.875, max=2.875), moisture=ParameterPack(min=0.75, max=1.5))
 )
 ```
 
