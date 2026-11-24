@@ -1,5 +1,4 @@
-# Edited by Claude Opus 5.5 (Anthropic) (pi) on 2026-11-23, Fixed step() multipliers zeroing/flipping values and clamped depletion at 0
-from greenhouse_lib.model.models import DepletionStrategy
+from greenhouse_lib.model.models import DepletionStrategy, PlantEnvironment
 from greenhouse_lib.model.parameters import PlantParameters
 from greenhouse_lib.model.utility import percentage_out_of_range, vpd, deviation
 
@@ -7,39 +6,15 @@ BASE_MOISTURE_LOSS = 0.5  # % per step
 BASE_NITROGEN_LOSS = 0.2  # ppm per step
 
 class BasicDepletionStrategy(DepletionStrategy):
-    plant: PlantParameters
+    def step(self, environment: PlantEnvironment):
+        # Make an explicit copy of the environment, python does this automatically, but it is hidden behavior.
+        environment = environment
 
-    # Current temperature, °C
-    temperature: float | int = 0
-    # Relative humidity, %
-    relative_humidity: float | int = 0
-    # Current level of nitrogen in the soil, parts per million (ppm)
-    nitrogen: float | int = 0
-    # Relative moisture % of the soil
-    moisture: float | int = 0
-    # Current light level in Photosynthetic Photon Flux Density (PPFD), µmol/m²/s.
-    light: float | int = 0
-    # Current ph level of the soil (0-14)
-    ph_level: float | int = 0
+        light_deviation = deviation(percentage_out_of_range(environment.light, self.plant.light.min, self.plant.light.max))
+        nitrogen_deviation = deviation(percentage_out_of_range(environment.nitrogen, self.plant.nitrogen.min, self.plant.nitrogen.max))
+        moisture_deviation = deviation(percentage_out_of_range(environment.moisture, self.plant.moisture.min, self.plant.moisture.max))
 
-    def __init__(self, plant: PlantParameters):
-        self.plant = plant
-
-    def update(self, temperature: float, humidity: float, nitrogen, moisture, light, ph_level):
-        self.temperature = temperature
-        self.relative_humidity = humidity
-        self.nitrogen = nitrogen
-        self.moisture = moisture
-        self.light = light
-        self.ph_level = ph_level
-
-
-    def step(self):
-        light_deviation = deviation(percentage_out_of_range(self.light, self.plant.light.min, self.plant.light.max))
-        nitrogen_deviation = deviation(percentage_out_of_range(self.nitrogen, self.plant.nitrogen.min, self.plant.nitrogen.max))
-        moisture_deviation = deviation(percentage_out_of_range(self.moisture, self.plant.moisture.min, self.plant.moisture.max))
-
-        vapor_pressure_deficit = vpd(self.temperature, self.relative_humidity)
+        vapor_pressure_deficit = vpd(environment.temperature, environment.relative_humidity)
         vpd_deviation = deviation(percentage_out_of_range(vapor_pressure_deficit, self.plant.vpd.min, self.plant.vpd.max))
 
         # Baseline water loss
@@ -77,5 +52,7 @@ class BasicDepletionStrategy(DepletionStrategy):
         water_mult = max(0.0, water_mult)
         nitrogen_mult = max(0.0, nitrogen_mult)
 
-        self.moisture = max(0.0, self.moisture - water_mult)
-        self.nitrogen = max(0.0, self.nitrogen - nitrogen_mult)
+        environment.moisture = max(0.0, environment.moisture - water_mult)
+        environment.nitrogen = max(0.0, environment.nitrogen - nitrogen_mult)
+
+        return environment
