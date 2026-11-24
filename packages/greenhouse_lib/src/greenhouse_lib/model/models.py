@@ -2,6 +2,7 @@ from enum import Enum
 from random import uniform
 from typing import NamedTuple
 
+
 class ParameterPack:
     min: float
     max: float
@@ -30,7 +31,6 @@ class PlantParameters:
         self.light = light
 
 
-# MARK: Pump contents
 class PumpBonuses:
     """
     How much a particular activation of a pump will affect the soil.
@@ -150,6 +150,14 @@ class GrowthStrategy:
         pass
 
 
+class PlantModelTuner:
+    light_impact: float = 1
+    nitrogen_impact: float = 1
+    moisture_impact: float = 1
+    vpd_impact: float = 1
+    ph_impact: float = 1
+
+
 class PlantModel:
     """
     A model of a plant that uses growth and depletion strategies
@@ -162,13 +170,17 @@ class PlantModel:
     depletion_strategy: DepletionStrategy
     environment: PlantEnvironment
 
+    tuner: PlantModelTuner
+
     def __init__(self, plant: PlantParameters, action_strategy: ActionStrategy, growth_strategy: GrowthStrategy,
-                 depletion_strategy: DepletionStrategy):
+                 depletion_strategy: DepletionStrategy, environment: PlantEnvironment = PlantEnvironment(),
+                 tuner: PlantModelTuner = PlantModelTuner()):
         self.plant = plant
         self.action_strategy = action_strategy
         self.growth_strategy = growth_strategy
         self.depletion_strategy = depletion_strategy
-        self.environment = PlantEnvironment()
+        self.environment = environment
+        self.tuner = tuner
 
     def update(self, temperature: float, humidity: float, nitrogen, moisture, light, ph_level):
         """
@@ -214,11 +226,20 @@ class PlantModel:
         # Import here since this would pollute the top level imports of this file.
         from greenhouse_lib.model.utility import deviation, percentage_out_of_range, vpd
 
-        light_deviation = deviation(percentage_out_of_range(self.environment.light, self.plant.light.min, self.plant.light.max))
-        nitrogen_deviation = deviation(percentage_out_of_range(self.environment.nitrogen, self.plant.nitrogen.min, self.plant.nitrogen.max))
-        moisture_deviation = deviation(percentage_out_of_range(self.environment.moisture, self.plant.moisture.min, self.plant.moisture.max))
+        light_deviation = abs(
+            deviation(percentage_out_of_range(self.environment.light, self.plant.light.min, self.plant.light.max)))
+        nitrogen_deviation = abs(deviation(
+            percentage_out_of_range(self.environment.nitrogen, self.plant.nitrogen.min, self.plant.nitrogen.max)))
+        moisture_deviation = abs(deviation(
+            percentage_out_of_range(self.environment.moisture, self.plant.moisture.min, self.plant.moisture.max)))
+        ph_deviation = abs(
+            deviation(percentage_out_of_range(self.environment.ph_level, self.plant.ph.min, self.plant.ph.max)))
 
         vapor_pressure_deficit = vpd(self.environment.temperature, self.environment.relative_humidity)
-        vpd_deviation = deviation(percentage_out_of_range(vapor_pressure_deficit, self.plant.vpd.min, self.plant.vpd.max))
+        vpd_deviation = abs(
+            deviation(percentage_out_of_range(vapor_pressure_deficit, self.plant.vpd.min, self.plant.vpd.max)))
 
-        return light_deviation + nitrogen_deviation + moisture_deviation + vpd_deviation
+        return (self.tuner.light_impact * light_deviation +
+                self.tuner.nitrogen_impact * nitrogen_deviation +
+                self.tuner.moisture_impact * moisture_deviation +
+                self.tuner.vpd_impact * vpd_deviation + ph_deviation)
