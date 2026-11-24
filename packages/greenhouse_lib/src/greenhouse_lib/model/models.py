@@ -1,13 +1,47 @@
 from enum import Enum
-from os import environ
+from random import uniform
 from typing import NamedTuple
 
-from greenhouse_lib.model.parameters import PlantParameters
+
+class ParameterPack:
+    min: float
+    max: float
+
+    def __init__(self, min: float, max: float):
+        self.min = min
+        self.max = max
+
+    def random(self):
+        return uniform(self.min, self.max)
 
 
-class PlantStressModel:
-    def predict(self, temperature: float, humidity: float, nitrogen, moisture, light, ph_level) -> float:
-        pass
+class PlantParameters:
+    vpd: ParameterPack
+    nitrogen: ParameterPack
+    moisture: ParameterPack
+    ph: ParameterPack
+    light: ParameterPack
+
+    def __init__(self, vpd: ParameterPack, nitrogen: ParameterPack, moisture: ParameterPack, ph: ParameterPack,
+                 light: ParameterPack):
+        self.vpd = vpd
+        self.nitrogen = nitrogen
+        self.moisture = moisture
+        self.ph = ph
+        self.light = light
+
+
+# MARK: Pump contents
+class PumpBonuses:
+    """
+    How much a particular activation of a pump will affect the soil.
+    """
+    moisture: ParameterPack
+    nitrogen: ParameterPack
+
+    def __init__(self, moisture: ParameterPack, nitrogen: ParameterPack):
+        self.nitrogen = nitrogen
+        self.moisture = moisture
 
 
 class PumpControlOutput(Enum):
@@ -17,10 +51,31 @@ class PumpControlOutput(Enum):
     LONG = 3
 
 
+class PumpPack:
+    long: PumpBonuses
+    medium: PumpBonuses
+    short: PumpBonuses
+
+    def pack_for(self, output: PumpControlOutput) -> PumpBonuses | None:
+        match output:
+            case PumpControlOutput.SHORT:
+                return self.short
+            case PumpControlOutput.MEDIUM:
+                return self.medium
+            case PumpControlOutput.LONG:
+                return self.long
+        return None
+
+
 class DecisionOutput(NamedTuple):
     water_pump: PumpControlOutput
     nutrient_pump: PumpControlOutput
     light_on: bool
+
+
+class PlantStressModel:
+    def predict(self, temperature: float, humidity: float, nitrogen, moisture, light, ph_level) -> float:
+        pass
 
 
 class PlantEnvironment:
@@ -37,7 +92,8 @@ class PlantEnvironment:
     # Current ph level of the soil (0-14)
     ph_level: float | int = 0
 
-    def update(self, temperature: float | int | None, humidity: float | int | None, nitrogen: float | int | None, moisture: float | int | None, light: float | int | None, ph_level: float | int | None):
+    def update(self, temperature: float | int | None, humidity: float | int | None, nitrogen: float | int | None,
+               moisture: float | int | None, light: float | int | None, ph_level: float | int | None):
         if temperature is not None:
             self.temperature = temperature
 
@@ -56,10 +112,12 @@ class PlantEnvironment:
         if ph_level is not None:
             self.ph_level = ph_level
 
+
 class ActionStrategy:
     """
     A strategy for what control actions should be made based on the plant environment.
     """
+
     def update(self, environment: PlantEnvironment):
         pass
 
@@ -105,7 +163,8 @@ class Plant:
     depletion_strategy: DepletionStrategy
     environment: PlantEnvironment
 
-    def __init__(self, plant: PlantParameters, action_strategy: ActionStrategy, growth_strategy: GrowthStrategy, depletion_strategy: DepletionStrategy):
+    def __init__(self, plant: PlantParameters, action_strategy: ActionStrategy, growth_strategy: GrowthStrategy,
+                 depletion_strategy: DepletionStrategy):
         self.plant = plant
         self.action_strategy = action_strategy
         self.growth_strategy = growth_strategy

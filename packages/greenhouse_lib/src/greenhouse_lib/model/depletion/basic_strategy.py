@@ -1,5 +1,4 @@
 from greenhouse_lib.model.models import DepletionStrategy, PlantEnvironment
-from greenhouse_lib.model.parameters import PlantParameters
 from greenhouse_lib.model.utility import percentage_out_of_range, vpd, deviation
 
 BASE_MOISTURE_LOSS = 0.5  # % per step
