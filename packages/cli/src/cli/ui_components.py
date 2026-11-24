@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 
 from asciimatics.effects import Sprite
 from asciimatics.paths import Path
@@ -103,7 +104,7 @@ class Controls(Frame):
         self.add_layout(self.layout)
         self.pp_button = Button("Play", name="button_play_pause", on_click=self._play_pause)
         self.layout.add_widget(self.pp_button, 0)
-        self.timer_label = Label("0", name="label_sim_timer")
+        self.timer_label = Label("0-0", name="label_sim_timer")
         self.layout.add_widget(self.timer_label, 1)
         self.layout.add_widget(Button("Step", name="button_step", on_click=self._step), 2)
         self.layout.add_widget(Button("Water", name="button_water", on_click=self._water), 0)
@@ -128,16 +129,17 @@ class Controls(Frame):
         self.state.step()
 
     def _water(self):
-        self.state.moisture += 0.2
+        self.state.water()
 
     def _fertilize(self):
-        self.state.nitrogen += 0.5
+        self.state.fertilize()
 
     def _quit(self):
         self._scene.add_effect(self.quit_popup)
         
     def _quit_on_yes(self, selected):
         if selected == 0:
+            self.state.stop_sim()
             raise StopApplication("User exit")
 
     @property
@@ -150,7 +152,49 @@ class Controls(Frame):
         self.pp_button.text = "Pause" if self.state.run else "Play"
         self.timer_label.text = f"{self.state.get_timer()}"
 
+class PumpSprite(Sprite):
+    def __init__(self, screen, path, state: CLIState):
 
+        self.stopped_frame = ColourImageFile(screen, 
+                                    f"packages/cli/src/cli/assets/pump_0.png",  
+                                    round(screen.height*0.2), 
+                                    uni=screen.unicode_aware,
+                                    dither=screen.unicode_aware
+                                    ) 
+        self.anim_frames = [
+            ColourImageFile(screen, 
+                            f"packages/cli/src/cli/assets/pump_{i}.png",  
+                            round(screen.height*0.2), 
+                            uni=screen.unicode_aware,
+                            dither=screen.unicode_aware
+                            ) 
+            for i in range(1, 4)
+        ]
+        self.state = state
+        self.anim_frame = 0
+        self.frame_interval = 0.2
+        self.next_frame_time = datetime.now()
+        super().__init__(
+            screen=screen, 
+            path=path, 
+            renderer_dict={
+                "default": self.stopped_frame
+            }, 
+            start_frame=0, 
+            stop_frame=0
+        )
+
+    def update(self, frame_no):
+        super().update(frame_no)
+        t = datetime.now()
+        if t < self.state.pump_until:
+            if t > self.next_frame_time:
+                self.next_frame_time = t + timedelta(seconds=self.frame_interval)
+                self.anim_frame = (self.anim_frame + 1) % 3
+                self._renderer_dict["default"] = self.anim_frames[self.anim_frame]
+        else:
+            self._renderer_dict["default"] = self.stopped_frame
+        
 
 class PlantSprite(Sprite):
     def __init__(self, screen, path, state: CLIState):
@@ -186,13 +230,17 @@ class PlantSprite(Sprite):
 
 class GreenhouseScene(Scene):
     def __init__(self, screen, state: CLIState):
-        path = Path()
-        plant_root = (int(screen.width*0.4), int(screen.height * 0.4))
-        path.jump_to(plant_root[0], plant_root[1])
-        plant = PlantSprite(screen, path, state)
+        plant_path = Path()
+        plant_root = (int(screen.width * 0.4), int(screen.height * 0.4))
+        plant_path.jump_to(plant_root[0], plant_root[1])
+        plant = PlantSprite(screen, plant_path, state)
         stats = SimStats(screen, state)
+        pump_root = (int(screen.width * 0.9), int(screen.height * 0.65))
+        pump_path = Path()
+        pump_path.jump_to(pump_root[0], pump_root[1])
+        pump = PumpSprite(screen, pump_path, state)
         controls = Controls(screen, state)
-        effects = [stats, controls, plant]
+        effects = [stats, controls, plant, pump]
         super().__init__(effects, -1)
 
     def process_event(self, event):

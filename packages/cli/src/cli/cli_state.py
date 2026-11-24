@@ -1,6 +1,7 @@
 from collections.abc import Callable
 from threading import Lock, Thread
 from time import sleep
+from datetime import datetime, timedelta
 
 from cli.db_interface import InfluxDBInterface, PlantSnapshot
 
@@ -13,6 +14,7 @@ class RepeatTimerTask:
         self.fn = fn
         self.thread = None
         self.running = False
+        self.alive = True
 
     def run(self):
         if self.running or self.thread is not None:
@@ -33,9 +35,15 @@ class RepeatTimerTask:
         with self.lock:
             return self.step_timer
 
+    def kill(self):
+        with self.lock:
+            self.alive = False
+
     def _cycle(self):
         while True:
             with self.lock:
+                if not self.alive:
+                    break
                 if self.running:
                     self.step_timer -= 1
                     if self.step_timer == 0:
@@ -94,12 +102,15 @@ class CLIState:
         self.light = light
         self.ph_level = ph_level
 
+        self.pump_until = datetime.now()
+
         self.timescale = 3600 # 1 second simulates 1 hour
         self.run = False
 
         self.db_interface = InfluxDBInterface()
 
         self.sim_timer = RepeatTimerTask(12, self.step)
+        self.last_timer_count = 0
 
     def step(self):
         self.stress = self.stress_model.predict(
@@ -133,6 +144,7 @@ class CLIState:
                                  self.light, 
                                  self.ph_level)
 
+
         self.db_interface.write_snapshot(snapshot)
 
     def get_health(self) -> float:
@@ -147,3 +159,13 @@ class CLIState:
 
     def get_timer(self):
         return self.sim_timer.get_timer()
+
+    def water(self):
+        self.moisture += 0.2
+        self.pump_until = datetime.now() + timedelta(seconds=3)
+
+    def fertilize(self):
+        self.nitrogen += 0.5
+
+    def stop_sim(self): 
+        self.sim_timer.kill()
