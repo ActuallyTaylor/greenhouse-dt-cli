@@ -55,6 +55,11 @@ class PumpPack:
     medium: PumpBonuses
     short: PumpBonuses
 
+    def __init__(self, long: PumpBonuses, medium: PumpBonuses, short: PumpBonuses):
+        self.long = long
+        self.medium = medium
+        self.short = short
+
     def pack_for(self, output: PumpControlOutput) -> PumpBonuses | None:
         match output:
             case PumpControlOutput.SHORT:
