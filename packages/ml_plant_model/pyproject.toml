@@ -1,0 +1,30 @@
+[project]
+name = "ml_plant_model"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Taylor Lineman", email = "git@actuallytaylor.com" },
+    { name = "Reid Taylor", email = "reidtaylor1126@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "kagglehub>=1.0.3",
+    "matplotlib>=3.11.2",
+    "pandas>=3.1.1",
+    "pydantic>=2.14.3",
+    "pyet>=1.4.0",
+    "scikit-learn>=1.9.1",
+    "seaborn>=0.13.2",
+    "xgboost>=3.4.1",
+]
+
+[project.scripts]
+plant_model = "ml_plant_model:main"
+
+[build-system]
+requires = ["uv_build>=0.13.7,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+plant_model = { workspace = true }
