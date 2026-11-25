@@ -1,7 +1,7 @@
 from collections.abc import Callable
+from datetime import datetime, timedelta
 from threading import Lock, Thread
 from time import sleep
-from datetime import datetime, timedelta
 
 from cli.db_interface import InfluxDBInterface, PlantSnapshot
 
@@ -104,12 +104,12 @@ class CLIState:
 
         self.pump_until = datetime.now()
 
-        self.timescale = 3600 # 1 second simulates 1 hour
+        self.timescale = 3600 # 1 second simulates 1 hour, currently unused
         self.run = False
 
         self.db_interface = InfluxDBInterface()
 
-        self.sim_timer = RepeatTimerTask(12, self.step)
+        self.sim_timer = RepeatTimerTask(8, self.step)
         self.last_timer_count = 0
 
     def step(self):

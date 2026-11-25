@@ -156,7 +156,7 @@ class PumpSprite(Sprite):
     def __init__(self, screen, path, state: CLIState):
 
         self.stopped_frame = ColourImageFile(screen, 
-                                    f"packages/cli/src/cli/assets/pump_0.png",  
+                                    "packages/cli/src/cli/assets/pump_0.png",  
                                     round(screen.height*0.2), 
                                     uni=screen.unicode_aware,
                                     dither=screen.unicode_aware
@@ -235,7 +235,7 @@ class GreenhouseScene(Scene):
         plant_path.jump_to(plant_root[0], plant_root[1])
         plant = PlantSprite(screen, plant_path, state)
         stats = SimStats(screen, state)
-        pump_root = (int(screen.width * 0.9), int(screen.height * 0.65))
+        pump_root = (int(screen.width * 0.875), int(screen.height * 0.65))
         pump_path = Path()
         pump_path.jump_to(pump_root[0], pump_root[1])
         pump = PumpSprite(screen, pump_path, state)
