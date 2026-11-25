@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from threading import Lock, Thread
 from time import sleep
 
-from cli.db_interface import InfluxDBInterface, PlantSnapshot
+from cli.db_interface import DBConnectionError, InfluxDBInterface, PlantSnapshot
 
 
 class RepeatTimerTask:
@@ -112,6 +112,7 @@ class CLIState:
         self.run = False
 
         self.db_interface = InfluxDBInterface()
+        self.db_connected = True
 
         self.sim_timer = RepeatTimerTask(8, self.step)
         self.last_timer_count = 0
@@ -125,7 +126,7 @@ class CLIState:
             self.light, 
             self.ph_level
         )
-        
+
         resources = self.depletion_model.update(
             self.stress, 
             self.temperature, 
@@ -148,8 +149,10 @@ class CLIState:
                                  self.light, 
                                  self.ph_level)
 
-
-        self.db_interface.write_snapshot(snapshot)
+        try:
+            self.db_interface.write_snapshot(snapshot)
+        except DBConnectionError:
+            self.db_connected = False
 
     def get_health(self) -> float:
         return self.stress

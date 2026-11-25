@@ -23,4 +23,5 @@ UI_THEME = {
         "selected_field": (Screen.COLOUR_YELLOW, Screen.A_NORMAL, Screen.COLOUR_BLUE),
         "focus_field": (Screen.COLOUR_WHITE, Screen.A_NORMAL, Screen.COLOUR_BLUE),
         "selected_focus_field": (Screen.COLOUR_WHITE, Screen.A_BOLD, Screen.COLOUR_CYAN),
+        "warning": (Screen.COLOUR_RED, Screen.A_BOLD, Screen.COLOUR_BLACK)
     }

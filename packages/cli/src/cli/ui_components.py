@@ -90,7 +90,7 @@ class SimStats(Frame):
 class Controls(Frame):
     def __init__(self, screen, state: CLIState):
         super().__init__(screen, 
-                         screen.height * 1 // 5, 
+                         screen.height * 1 // 6, 
                          screen.width * 1 // 2, 
                          x=screen.width * 1 // 4, 
                          y=screen.height * 4 // 5, 
@@ -104,12 +104,15 @@ class Controls(Frame):
         self.add_layout(self.layout)
         self.pp_button = Button("Play", name="button_play_pause", on_click=self._play_pause)
         self.layout.add_widget(self.pp_button, 0)
-        self.timer_label = Label("0-0", name="label_sim_timer")
+        self.timer_label = Label("0", name="label_sim_timer", align="^")
         self.layout.add_widget(self.timer_label, 1)
         self.layout.add_widget(Button("Step", name="button_step", on_click=self._step), 2)
         self.layout.add_widget(Button("Water", name="button_water", on_click=self._water), 0)
         self.layout.add_widget(Button("Fertilize", name="button_fertilize", on_click=self._fertilize), 1)
         self.layout.add_widget(Button("Exit", name="button_exit", on_click=self._quit), 2)
+        self.db_warning = Label("", name="label_db_warning", align="^")
+        self.db_warning.custom_colour = "warning"
+        self.layout.add_widget(self.db_warning, 1)
 
         self.quit_popup = PopUpDialog(self._screen, "Are you sure?", ["Yes", "No"],
                     has_shadow=True, on_close=self._quit_on_yes)
@@ -150,7 +153,8 @@ class Controls(Frame):
         super()._update(frame_no)
 
         self.pp_button.text = "Pause" if self.state.run else "Play"
-        self.timer_label.text = f"{self.state.get_timer()}"
+        self.timer_label.text = f"{"[]" * self.state.get_timer()}" if self.state.run else ""
+        self.db_warning.text = "" if self.state.db_connected else "! WARNING: DB connection failed !"
 
 class PumpSprite(Sprite):
     def __init__(self, screen, path, state: CLIState):

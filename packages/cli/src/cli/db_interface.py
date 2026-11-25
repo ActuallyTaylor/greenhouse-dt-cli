@@ -6,6 +6,10 @@ from influxdb_client.client.influxdb_client import InfluxDBClient
 from influxdb_client.client.write.point import Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 
+from urllib3.exceptions import NewConnectionError
+
+class DBConnectionError(Exception):
+    pass
 
 @dataclass
 class PlantSnapshot:
@@ -21,14 +25,15 @@ class PlantSnapshot:
 
 class InfluxDBInterface:
 
-    def __init__(self, bucket: str = "greenhouse"):
+    def __init__(self):
 
-        token = dotenv.dotenv_values()["INFLUXDB_TOKEN"]
+        env_vals = dotenv.dotenv_values()
+        token = env_vals["INFLUXDB_TOKEN"]
         if token is None:
             print("Missing INFLUXDB_TOKEN in .env")
             sys.exit()
-        self.org = "greenhouse"
-        self.bucket = bucket
+        self.org = env_vals["INFLUXDB_ORG"] or 'greenhouse'
+        self.bucket = env_vals["INFLUXDB_ORG"] or 'greenhouse'
         url = "http://localhost:8086"
 
         self.client = InfluxDBClient(url, token=token)
@@ -63,4 +68,7 @@ class InfluxDBInterface:
             .field("ph_level", snapshot.ph_level)
         )
 
-        write_api.write(bucket=self.bucket, org=self.org, record=points)
+        try:
+            write_api.write(bucket=self.bucket, org=self.org, record=points)
+        except NewConnectionError:
+            raise DBConnectionError
