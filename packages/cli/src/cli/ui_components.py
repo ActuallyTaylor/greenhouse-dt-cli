@@ -188,6 +188,7 @@ class PumpSprite(Sprite):
         super().update(frame_no)
         t = datetime.now()
         if t < self.state.pump_until:
+            # Animation loop
             if t > self.next_frame_time:
                 self.next_frame_time = t + timedelta(seconds=self.frame_interval)
                 self.anim_frame = (self.anim_frame + 1) % 3

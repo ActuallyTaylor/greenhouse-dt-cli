@@ -7,6 +7,10 @@ from cli.db_interface import InfluxDBInterface, PlantSnapshot
 
 
 class RepeatTimerTask:
+    """
+    Schedules a repeated task to be triggered every X seconds.
+    Runs in a separate thread to maintain UI responsiveness
+    """
     def __init__(self, reset_value: int, fn: Callable):
         self.lock = Lock()
         self.step_timer = reset_value
