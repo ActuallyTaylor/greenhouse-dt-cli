@@ -99,10 +99,14 @@ version = "0.1.0"
 source = { editable = "packages/cli" }
 dependencies = [
     { name = "asciimatics" },
+    { name = "greenhouse-lib" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "asciimatics", specifier = ">=1.15.0" }]
+requires-dist = [
+    { name = "asciimatics", specifier = ">=1.15.0" },
+    { name = "greenhouse-lib", editable = "packages/greenhouse_lib" },
+]
 
 [[package]]
 name = "click"
@@ -393,6 +397,11 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/b4/fc/1203d011145c98ddce3cd2f505bb54375ef8d43223053df6bfcf3c746f46/pydantic-2.14.3.tar.gz", hash = "sha256:1054f237f4d4733e5a30e1e2333bd33a2004ab9ab1510bd053a9a31bb48e232d", size = 925636, upload-time = "2026-11-05T09:17:04.686Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/72/b8/b864503789ef5c58597d2a7b4adbee62c26440ab1e682581fc6838df8947/pydantic-2.14.3-py3-none-any.whl", hash = "sha256:3f7b347782ab7e4cf4c798496ae3a82787d9f21ec12676a9c564355eeef8daa8", size = 494071, upload-time = "2026-11-05T09:17:02.426Z" },
+]
+
+[package.optional-dependencies]
+email = [
+    { name = "email-validator" },
 ]
 
 [[package]]

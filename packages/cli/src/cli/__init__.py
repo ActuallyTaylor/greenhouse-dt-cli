@@ -1,2 +1,3 @@
-def main() -> None:
-    print("Hello from cli!")
+from cli import cli
+
+cli.main()

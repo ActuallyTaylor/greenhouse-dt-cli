@@ -1,0 +1,15 @@
+FROM python:3.14-slim-trixie
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# Copy the project into the image
+COPY . /app
+
+# Disable development dependencies
+ENV UV_NO_DEV=1
+
+# # Sync the project into a new environment, asserting the lockfile is up to date
+# RUN uv sync --locked
+
+WORKDIR /app
+RUN uv sync --locked
+CMD ["uv", "run", "--package", "api", "api"]
